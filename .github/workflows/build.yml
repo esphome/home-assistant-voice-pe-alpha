@@ -88,8 +88,8 @@ jobs:
     with:
       version: ${{ github.event.release.tag_name }}
 
-  promote-beta:
-    name: Promote to Beta
+  promote-alpha:
+    name: Promote to Alpha
     if: github.event_name == 'release'
     uses: esphome/workflows/.github/workflows/promote-r2.yml@2025.8.1
     needs:
@@ -97,19 +97,6 @@ jobs:
     with:
       version: ${{ github.event.release.tag_name }}
       directory: ${{ github.event.repository.name }}
-      channel: beta
-      manifest-filename: manifest-beta.json
-    secrets: inherit
-
-  promote-prod:
-    name: Promote to Production
-    if: github.event_name == 'release' && github.event.release.prerelease == false
-    uses: esphome/workflows/.github/workflows/promote-r2.yml@2025.8.1
-    needs:
-      - upload-to-r2
-    with:
-      version: ${{ github.event.release.tag_name }}
-      directory: ${{ github.event.repository.name }}
-      channel: production
-      manifest-filename: manifest.json
+      channel: alpha
+      manifest-filename: manifest-alpha.json
     secrets: inherit
