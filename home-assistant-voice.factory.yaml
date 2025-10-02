@@ -28,7 +28,7 @@ update:
   - platform: http_request
     name: None
     id: update_http_request
-    source: https://firmware.esphome.io/home-assistant-voice-pe-alpha/home-assistant-voice/manifest.json
+    source: https://firmware.esphome.io/home-assistant-voice-pe-alpha/home-assistant-voice/manifest-alpha.json
 
 dashboard_import:
   package_import_url: github://esphome/home-assistant-voice-pe-alpha/home-assistant-voice.yaml
