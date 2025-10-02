@@ -28,10 +28,10 @@ update:
   - platform: http_request
     name: None
     id: update_http_request
-    source: https://firmware.esphome.io/home-assistant-voice-pe/home-assistant-voice/manifest.json
+    source: https://firmware.esphome.io/home-assistant-voice-pe-alpha/home-assistant-voice/manifest.json
 
 dashboard_import:
-  package_import_url: github://esphome/home-assistant-voice-pe/home-assistant-voice.yaml
+  package_import_url: github://esphome/home-assistant-voice-pe-alpha/home-assistant-voice.yaml
 
 wifi:
   on_connect:
@@ -55,21 +55,3 @@ esp32_improv:
   on_stop:
     - lambda: id(improv_ble_in_progress) = false;
     - script.execute: control_leds
-
-switch:
-  - platform: template
-    id: beta_firmware
-    name: Beta firmware
-    icon: "mdi:test-tube"
-    disabled_by_default: true
-    entity_category: config
-    optimistic: true
-    restore_mode: RESTORE_DEFAULT_OFF
-    on_turn_on:
-      - logger.log: "OTA updates set to use Beta firmware"
-      - lambda: id(update_http_request).set_source_url("https://firmware.esphome.io/home-assistant-voice-pe/home-assistant-voice/manifest-beta.json");
-      - component.update: update_http_request
-    on_turn_off:
-      - logger.log: "OTA updates set to use Production firmware"
-      - lambda: id(update_http_request).set_source_url("https://firmware.esphome.io/home-assistant-voice-pe/home-assistant-voice/manifest.json");
-      - component.update: update_http_request
