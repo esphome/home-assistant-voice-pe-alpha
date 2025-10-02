@@ -33,4 +33,4 @@ jobs:
           r2-secret-access-key: ${{ secrets.CLOUDFLARE_R2_SECRET_ACCESS_KEY }}
           r2-bucket: ${{ secrets.CLOUDFLARE_R2_BUCKET }}
           source-dir: output
-          destination-dir: home-assistant-voice-pe/${{ matrix.device }}/
+          destination-dir: home-assistant-voice-pe-alpha/${{ matrix.device }}/
