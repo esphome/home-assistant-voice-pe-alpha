@@ -1784,8 +1784,8 @@ voice_assistant:
   on_start:
     - mixer_speaker.apply_ducking:
         id: media_mixing_input
-        decibel_reduction: 20 # Number of dB quieter; higher implies more quiet, 0 implies full volume
-        duration: 0.0s # The duration of the transition (default is no transition)
+        decibel_reduction: 20  # Number of dB quieter; higher implies more quiet, 0 implies full volume
+        duration: 0.0s  # The duration of the transition (default is no transition)
     - mixer_speaker.apply_ducking:
         id: resonate_mixing_input
         decibel_reduction: 20
