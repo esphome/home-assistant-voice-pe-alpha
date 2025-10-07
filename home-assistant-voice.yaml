@@ -1638,7 +1638,7 @@ external_components:
   - source:
       type: git
       url: https://github.com/esphome/esphome
-      ref: 2149c3c0baed68259ea3fb7fb425e606db785e5b
+      ref: 7ba12768dc05000ed2e4094381af891f8b58786f
     components: [audio, mdns, mixer, resampler, resonate]
     refresh: 0s
 
