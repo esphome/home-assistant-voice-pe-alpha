@@ -32,7 +32,7 @@ esphome:
   name: home-assistant-voice
   friendly_name: Home Assistant Voice
   name_add_mac_suffix: true
-  min_version: 2025.9.3
+  min_version: 2025.11.0
   on_boot:
     priority: 375
     then:
@@ -56,7 +56,7 @@ esp32:
   flash_size: 16MB
   framework:
     type: esp-idf
-    version: recommended
+    version: 5.5.1
     sdkconfig_options:
       CONFIG_ESP32S3_DATA_CACHE_64KB: "y"
       CONFIG_ESP32S3_DATA_CACHE_LINE_64B: "y"
@@ -1638,8 +1638,8 @@ external_components:
   - source:
       type: git
       url: https://github.com/esphome/esphome
-      ref: 7ba12768dc05000ed2e4094381af891f8b58786f
-    components: [audio, mdns, mixer, resampler, resonate]
+      ref: ef1775727fb6d37c9911828776349ce685a416c4
+    components: [audio, mdns, mixer, psram, resampler, resonate, speaker]
     refresh: 0s
 
 audio_dac:
