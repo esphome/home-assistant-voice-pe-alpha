@@ -113,6 +113,7 @@ i2c:
 psram:
   mode: octal
   speed: 80MHz
+  ignore_not_found: false
 
 globals:
   # Global index for our LEDs. So that switching between different animation does not lead to unwanted effects.
@@ -1638,8 +1639,8 @@ external_components:
   - source:
       type: git
       url: https://github.com/esphome/esphome
-      ref: f743f0add8da4b66634854d864395404718171ba
-    components: [audio, mdns, mixer, psram, resampler, resonate, speaker]
+      ref: 3ecdf16d7555a80baa712273a1ca5c5134e6cf04
+    components: [audio, mdns, mixer, resampler, resonate]
     refresh: 0s
 
 audio_dac:
