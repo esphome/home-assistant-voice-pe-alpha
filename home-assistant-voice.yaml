@@ -82,7 +82,6 @@ wifi:
     - script.execute: control_leds
   on_disconnect:
     - script.execute: control_leds
-  power_save_mode: NONE  # Needed to maintain good Resonate sync
 
 network:
   enable_ipv6: true
