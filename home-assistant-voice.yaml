@@ -32,7 +32,7 @@ esphome:
   name: home-assistant-voice
   friendly_name: Home Assistant Voice
   name_add_mac_suffix: true
-  min_version: 2025.11.0
+  min_version: 2025.12.0
   on_boot:
     priority: 375
     then:
@@ -82,7 +82,6 @@ wifi:
     - script.execute: control_leds
   on_disconnect:
     - script.execute: control_leds
-  power_save_mode: NONE  # Needed to maintain good Resonate sync
 
 network:
   enable_ipv6: true
@@ -234,7 +233,7 @@ switch:
           decibel_reduction: 0
           duration: 1.0s
       - mixer_speaker.apply_ducking:
-          id: resonate_mixing_input
+          id: sendspin_mixing_input
           decibel_reduction: 0
           duration: 1.0s
       # Refresh the LED ring
@@ -246,7 +245,7 @@ switch:
           decibel_reduction: 20
           duration: 0.0s
       - mixer_speaker.apply_ducking:
-          id: resonate_mixing_input
+          id: sendspin_mixing_input
           decibel_reduction: 20
           duration: 0.0s
       # Enable stop wake word
@@ -1488,7 +1487,7 @@ speaker:
         timeout: never
       - id: media_mixing_input
         timeout: never
-      - id: resonate_mixing_input
+      - id: sendspin_mixing_input
         timeout: never
         buffer_duration: 200ms
 
@@ -1504,30 +1503,30 @@ speaker:
     sample_rate: 48000
     bits_per_sample: 16
   - platform: resampler
-    id: resonate_resampling_speaker
-    output_speaker: resonate_mixing_input
+    id: sendspin_resampling_speaker
+    output_speaker: sendspin_mixing_input
     # output_speaker: i2s_audio_speaker
     task_stack_in_psram: true
     sample_rate: 48000
     bits_per_sample: 16
 
-resonate:
-  id: resonate_hub
+sendspin:
+  id: sendspin_hub
   task_stack_in_psram: true
   kalman_process_error: 0.01
 
 media_player:
-  - platform: resonate
-    id: resonate_media_player
-    name: Resonate Media Player
-    speaker: resonate_resampling_speaker
+  - platform: sendspin
+    id: sendspin_media_player
+    name: Sendspin Media Player
+    speaker: sendspin_resampling_speaker
     task_stack_in_psram: true
     volume_min: 0.4
     volume_max: 0.85
     on_state:
       - lambda: |-
           if (id(external_media_player).is_ready()) {
-            id(external_media_player).volume = id(resonate_media_player).volume;
+            id(external_media_player).volume = id(sendspin_media_player).volume;
             id(external_media_player)->publish_state();
           }
   - platform: speaker
@@ -1555,8 +1554,8 @@ media_player:
     on_volume:
       - script.execute: control_leds
       - lambda: |-
-          if (id(resonate_media_player).is_ready()) {
-            id(resonate_media_player)->sync_speaker_volume();
+          if (id(sendspin_media_player).is_ready()) {
+            id(sendspin_media_player)->sync_speaker_volume();
           }
     on_announcement:
       - mixer_speaker.apply_ducking:
@@ -1564,7 +1563,7 @@ media_player:
           decibel_reduction: 20
           duration: 0.0s
       - mixer_speaker.apply_ducking:
-          id: resonate_mixing_input
+          id: sendspin_mixing_input
           decibel_reduction: 20
           duration: 0.0s
     on_state:
@@ -1582,7 +1581,7 @@ media_player:
               decibel_reduction: 0
               duration: 1.0s
           - mixer_speaker.apply_ducking:
-              id: resonate_mixing_input
+              id: sendspin_mixing_input
               decibel_reduction: 0
               duration: 1.0s
     files:
@@ -1637,11 +1636,35 @@ external_components:
       - voice_kit
     refresh: 0s
   - source:
+      # https://github.com/esphome/esphome/pull/12253
       type: git
       url: https://github.com/esphome/esphome
-      ref: 3ecdf16d7555a80baa712273a1ca5c5134e6cf04
-    components: [audio, mdns, mixer, resampler, resonate]
-    refresh: 0s
+      ref: 869d4517d7f7f9e682c6bbd0a21f52bed088e0e3
+    components: [mixer]
+  - source:
+      # https://github.com/esphome/esphome/pull/12254
+      type: git
+      url: https://github.com/esphome/esphome
+      ref: 1ab4b990092ae063a16cb1511a188c536fdb336e
+    components: [resampler]
+  - source:
+      # https://github.com/esphome/esphome/pull/12256
+      type: git
+      url: https://github.com/esphome/esphome
+      ref: c3da68d40c2699cba9f46d5b5fd25cda954ad95c
+    components: [audio]
+  - source:
+      # https://github.com/esphome/esphome/pull/12258
+      type: git
+      url: https://github.com/esphome/esphome
+      ref: bff22983a390352360796f8e1363127e0cd1f898
+    components: [media_player]
+  - source:
+      # https://github.com/esphome/esphome/pull/12284
+      type: git
+      url: https://github.com/esphome/esphome
+      ref: 4c508febae17fc54c86723a1c1e8b7d11c18ab34
+    components: [mdns, sendspin]
 
 audio_dac:
   - platform: aic3204
@@ -1788,7 +1811,7 @@ voice_assistant:
         decibel_reduction: 20  # Number of dB quieter; higher implies more quiet, 0 implies full volume
         duration: 0.0s  # The duration of the transition (default is no transition)
     - mixer_speaker.apply_ducking:
-        id: resonate_mixing_input
+        id: sendspin_mixing_input
         decibel_reduction: 20
         duration: 0.0s
   on_listening:
@@ -1831,7 +1854,7 @@ voice_assistant:
         decibel_reduction: 0
         duration: 1.0s
     - mixer_speaker.apply_ducking:
-        id: resonate_mixing_input
+        id: sendspin_mixing_input
         decibel_reduction: 0
         duration: 1.0s
     # If the end happened because of an error, let the error phase on for a second
