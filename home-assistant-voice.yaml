@@ -1665,6 +1665,12 @@ external_components:
       url: https://github.com/esphome/esphome
       ref: 4c508febae17fc54c86723a1c1e8b7d11c18ab34
     components: [mdns, sendspin]
+  - source:
+      # ESPHome 2025.11.4
+      type: git
+      url: https://github.com/esphome/esphome
+      ref: 42811edeb44301bb3850e294b6a84d146fcf2abc
+    components: [light]
 
 audio_dac:
   - platform: aic3204
