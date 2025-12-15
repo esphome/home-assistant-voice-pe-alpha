@@ -151,6 +151,11 @@ globals:
     type: bool
     restore_value: no
     initial_value: 'false'
+  # Global variable tracking if the group media player volume was recent changed.
+  - id: group_volume_changed
+    type: bool
+    restore_value: no
+    initial_value: 'false'
   # Global variable tracking if the jack has been plugged touched.
   - id: jack_plugged_recently
     type: bool
@@ -294,7 +299,7 @@ binary_sensor:
         then:
           - if:
               condition:
-                lambda: return !id(init_in_progress) && !id(color_changed);
+                lambda: return !id(init_in_progress) && !id(color_changed) && !id(group_volume_changed);
               then:
                 - if:
                     condition:
@@ -347,7 +352,7 @@ binary_sensor:
         then:
           - if:
               condition:
-                lambda: return !id(init_in_progress) && !id(color_changed);
+                lambda: return !id(init_in_progress) && !id(color_changed) && !id(group_volume_changed);
               then:
                 - script.execute:
                     id: play_sound
@@ -368,7 +373,7 @@ binary_sensor:
         then:
           - if:
               condition:
-                lambda: return !id(init_in_progress) && !id(color_changed);
+                lambda: return !id(init_in_progress) && !id(color_changed) && !id(group_volume_changed);
               then:
                 - script.execute:
                     id: play_sound
@@ -384,7 +389,7 @@ binary_sensor:
         then:
           - if:
               condition:
-                lambda: return !id(init_in_progress) && !id(color_changed);
+                lambda: return !id(init_in_progress) && !id(color_changed) && !id(group_volume_changed);
               then:
                 - script.execute:
                     id: play_sound
@@ -969,9 +974,18 @@ sensor:
                 id: control_volume
                 increase_volume: true
           else:
-            - script.execute:
-                id: control_hue
-                increase_hue: true
+            - if:
+                condition:
+                  media_player.is_playing:
+                    id: sendspin_group_media_player
+                then:
+                  - script.execute:
+                      id: control_group_volume
+                      increase_volume: true
+                else:
+                  - script.execute:
+                      id: control_hue
+                      increase_hue: true
     on_anticlockwise:
       - lambda: id(dial_touched) = true;
       - if:
@@ -982,9 +996,18 @@ sensor:
                 id: control_volume
                 increase_volume: false
           else:
-            - script.execute:
-                id: control_hue
-                increase_hue: false
+            - if:
+                condition:
+                  media_player.is_playing:
+                    id: sendspin_group_media_player
+                then:
+                  - script.execute:
+                      id: control_group_volume
+                      increase_volume: false
+                else:
+                  - script.execute:
+                      id: control_hue
+                      increase_hue: false
 
 event:
   # Event entity exposed to the user to automate on complex center button presses.
@@ -1270,6 +1293,33 @@ script:
           value: 0
       - script.execute: control_leds
 
+  # Script executed when the volume is increased/decreased from the dial for the group media player
+  - id: control_group_volume
+    mode: restart
+    parameters:
+      increase_volume: bool  # True: Increase volume / False: Decrease volume.
+    then:
+      - delay: 16ms
+      - if:
+          condition:
+            lambda: return increase_volume;
+          then:
+            - lambda: id(group_volume_changed) = true;
+            - media_player.volume_up:
+                id: sendspin_group_media_player
+          else:
+            - lambda: id(group_volume_changed) = true;
+            - media_player.volume_down:
+                id: sendspin_group_media_player
+      - script.execute: control_leds
+      - delay: 1s
+      - lambda: id(dial_touched) = false;
+      - lambda: id(group_volume_changed) = false;
+      - sensor.rotary_encoder.set_value:
+          id: dial
+          value: 0
+      - script.execute: control_leds
+
   # Script executed when the hue is increased/decreased from the dial
   - id: control_hue
     mode: restart
@@ -1546,6 +1596,8 @@ media_source:
         file: ${error_cloud_expired_sound_file}
 
 media_player:
+  - platform: sendspin
+    id: sendspin_group_media_player
   - platform: speaker_source
     id: external_media_player
     name: Media Player
@@ -1637,7 +1689,7 @@ external_components:
       # https://github.com/esphome/esphome/pull/12284
       type: git
       url: https://github.com/esphome/esphome
-      ref: 833f7b813dcca5296b0fe81a880f1754b3ab1a35
+      ref: cc238563f3fd37111e1b75bb3fba3498176445a2
     components: [mdns, sendspin]
   - source:
       # https://github.com/esphome/esphome/pull/12429
